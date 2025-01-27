@@ -1,31 +1,42 @@
-https://github.com/PranjalTanpure/Netflix.git
-
 pipeline {
     agent any
 
     environment {
-        NODEJS_HOME = tool 'NodeJS' // Define Node.js installation
+         NODEJS_HOME = tool 'NodeJS_22' // Define Node.js installation
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/PranjalTanpure/Netflix.git'
+                git branch: 'main', credentialsId: 'Netflix-CICD', url: 'https://github.com/PranjalTanpure/Netflix.git'
             }
         }
-
-        stage('Install Dependencies') {
+   
+        stage('Verify NodeJS Setup') {
             steps {
-                sh 'npm install'  // If using npm, otherwise ignore for pure HTML/CSS/JS
+                bat '"C:\node.exe" -v'
+                bat '"C:\npm.cmd" -v'
             }
         }
+        
+     stage('Install Dependencies') {
+    steps {
+    
+        bat '"C:\npm.cmd" install'
+    }
+}
 
-        stage('Linting') {
-            steps {
-                sh 'npx eslint "*/.js" || true'
-                sh 'npx stylelint "*/.css" || true'
-            }
-        }
+       stage('Linting') {
+    steps {
+        bat "\"C:\npm.cmd" install -g npx"
+        bat "\"C:\npm.cmd" install -g eslint stylelint"
+        bat "\"C:\node.exe" -v"
+
+        bat "\"C:\npm.cmd" exec -- eslint \"*/.js\" || exit 0"
+        bat "\"C:\npm.cmd" exec -- stylelint \"*/.css\" || exit 0"
+    }
+}
+
 
         stage('Build') {
             steps {
@@ -35,8 +46,10 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying to server...'
-                sh 'scp -r ./* user@server-ip:/var/www/html/'
+               echo 'Deploying to server...'
+               
+               
+
             }
         }
     }
@@ -50,4 +63,5 @@ pipeline {
         }
     }
 }
+
 
