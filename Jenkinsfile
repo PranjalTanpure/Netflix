@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-         NODEJS_HOME = tool 'NodeJS_22' // Define Node.js installation
+        NODEJS_HOME = tool 'NodeJS_22' // Define Node.js installation
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}" // Add Node.js to PATH
     }
 
     stages {
@@ -11,33 +12,31 @@ pipeline {
                 git branch: 'main', credentialsId: 'Netflix-CICD', url: 'https://github.com/PranjalTanpure/Netflix.git'
             }
         }
-   
+
         stage('Verify NodeJS Setup') {
             steps {
-                bat '"C:\\node.exe" -v'
-                bat '"C:\\npm.cmd" -v'
+                bat 'node -v' // Verify Node.js version
+                bat 'npm -v'  // Verify npm version
             }
         }
         
-     stage('Install Dependencies') {
-    steps {
-    
-        bat 'npm install'
-    }
-}
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm install' // Install dependencies
+            }
+        }
 
-       stage('Linting') {
-    steps {
-        bat "\"C:\\npm.cmd\" install -g npx"
+        stage('Linting') {
+            steps {
+                // Install required global tools
+                bat 'npm install -g npx'
+                bat 'npm install -g eslint stylelint'
 
-        bat "npm install -g eslint stylelint"
-        bat "\"C:\\node.exe" -v"
-
-        bat "\"C:\\npm.cmd" exec -- eslint \"*/.js\" || exit 0"
-        bat "\"C:\\npm.cmd" exec -- stylelint \"*/.css\" || exit 0"
-    }
-}
-
+                // Run linting for JS and CSS files
+                bat 'npx eslint \"**/*.js\" || exit 0'
+                bat 'npx stylelint \"**/*.css\" || exit 0'
+            }
+        }
 
         stage('Build') {
             steps {
@@ -47,10 +46,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-               echo 'Deploying to server...'
-               
-               
-
+                echo 'Deploying to server...'
             }
         }
     }
