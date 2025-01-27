@@ -14,26 +14,27 @@ pipeline {
    
         stage('Verify NodeJS Setup') {
             steps {
-                bat '"C:\node.exe" -v'
-                bat '"C:\npm.cmd" -v'
+                bat '"C:\\node.exe" -v'
+                bat '"C:\\npm.cmd" -v'
             }
         }
         
      stage('Install Dependencies') {
     steps {
     
-        bat '"C:\npm.cmd" install'
+        bat 'npm install'
     }
 }
 
        stage('Linting') {
     steps {
-        bat "\"C:\npm.cmd" install -g npx"
-        bat "\"C:\npm.cmd" install -g eslint stylelint"
-        bat "\"C:\node.exe" -v"
+        bat "\"C:\\npm.cmd\" install -g npx"
 
-        bat "\"C:\npm.cmd" exec -- eslint \"*/.js\" || exit 0"
-        bat "\"C:\npm.cmd" exec -- stylelint \"*/.css\" || exit 0"
+        bat "npm install -g eslint stylelint"
+        bat "\"C:\\node.exe" -v"
+
+        bat "\"C:\\npm.cmd" exec -- eslint \"*/.js\" || exit 0"
+        bat "\"C:\\npm.cmd" exec -- stylelint \"*/.css\" || exit 0"
     }
 }
 
